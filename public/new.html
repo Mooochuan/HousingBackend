@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>New House</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 2em auto; }
+        label { display: block; margin: .5em 0; }
+        input, textarea { width: 100%; padding: .5em; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+<h1>New house</h1>
+<div id="error" class="error"></div>
+<form id="listingForm">
+    <label>Title:<input type="text" name="title" required></label>
+    <label>Description:<textarea name="description" required></textarea></label>
+    <label>Rent:<input type="number" name="rent" step="0.01" required></label>
+    <label>Address:<input type="text" name="address" required></label>
+    <label>Room numbers:<input type="number" name="rooms" required></label>
+    <label>Contact:<input type="text" name="contact" required></label>
+    <button type="submit">Submit</button>
+</form>
+<p><a href="list.html">Check all houses</a></p>
+
+<script>
+    const form = document.getElementById('listingForm');
+    const errDiv = document.getElementById('error');
+
+    form.addEventListener('submit', async e => {
+        e.preventDefault();
+        errDiv.textContent = '';
+        const data = Object.fromEntries(new FormData(form));
+        try {
+            const res = await fetch('/api/listings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+            const body = await res.json();
+            if (!res.ok) throw new Error(body.error);
+            window.location.href = 'list.html';
+        } catch (err) {
+            errDiv.textContent = err.message;
+        }
+    });
+</script>
+</body>
+</html>

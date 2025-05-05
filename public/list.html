@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>House list</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 2em auto; }
+        .listing { border-bottom: 1px solid #ddd; padding: 1em 0; }
+        .listing h2 { margin: 0; }
+    </style>
+</head>
+<body>
+<h1>House list</h1>
+<p><a href="new.html">New house</a></p>
+<div id="listings"></div>
+
+<script>
+    async function fetchListings() {
+        try {
+            const res = await fetch('/api/listings');
+            const data = await res.json();
+            const container = document.getElementById('listings');
+
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'listing';
+                div.innerHTML = `
+            <h2>${item.title} — ￥${item.rent} / 月</h2>
+            <p><strong>Address:</strong>${item.address}</p>
+            <p><strong>Room:</strong>${item.rooms} 间</p>
+            <p><strong>Contact:</strong>${item.contact}</p>
+            <p>${item.description}</p>
+            <small>Release Time:${new Date(item.created_at).toLocaleString()}</small>
+          `;
+                container.appendChild(div);
+            });
+        } catch (e) {
+            console.error(e);
+            document.getElementById('listings').textContent = 'Failed to load';
+        }
+    }
+
+    fetchListings();
+</script>
+</body>
+</html>
